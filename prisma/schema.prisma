@@ -1,0 +1,170 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// User model for authentication and authorization
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  phone     String?
+  password  String   // Required for authentication
+  role      UserRole @default(seller)
+  status    UserStatus @default(active)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  sales     Sale[]
+  inventory InventoryItem[]
+
+  @@map("users")
+}
+
+// Product model
+model Product {
+  id                  String      @id @default(cuid())
+  name                String
+  description         String      @db.Text
+  shortDescription    String      @db.Text
+  price               Decimal
+  category            String
+  brand               String
+  image               String
+  stockStatus         StockStatus @default(in_stock)
+  productType         ProductType @default(aftermarket)
+  status              ProductStatus @default(active)
+  oemNumber           String?
+  
+  // AliExpress/Alibaba integration
+  aliExpressProductId String?
+  aliExpressSkuId     String?
+  aliExpressUrl       String?
+  
+  // JSON fields for arrays and objects
+  images              Json        // Array of image URLs
+  compatibility       Json        // Array of compatible vehicles
+  specifications      Json        // Object with key-value pairs
+  
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  // Relations
+  sales               Sale[]
+  inventory           InventoryItem?
+
+  @@index([category])
+  @@index([brand])
+  @@index([stockStatus])
+  @@map("products")
+}
+
+// Sale/Order model
+model Sale {
+  id            String      @id @default(cuid())
+  
+  // Product relation
+  productId     String
+  product       Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productName   String      // Denormalized for easier queries
+  
+  // Seller relation
+  sellerId      String
+  seller        User        @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  sellerName    String      // Denormalized for easier queries
+  
+  // Customer information
+  customerName  String
+  customerPhone String
+  customerEmail String
+  
+  // Order details
+  quantity      Int
+  totalAmount   Decimal
+  status        OrderStatus @default(pending)
+  
+  // AliExpress order tracking
+  aliExpressOrderId String?
+  trackingNumber    String?
+  
+  // Shipping information
+  shippingAddress   Json?   // JSON object with shipping details
+  
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([productId])
+  @@index([sellerId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("sales")
+}
+
+// Inventory model
+model InventoryItem {
+  id            String      @id @default(cuid())
+  
+  // Product relation (one-to-one)
+  productId     String      @unique
+  product       Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productName   String      // Denormalized for easier queries
+  
+  quantity      Int         @default(0)
+  stockStatus   StockStatus @default(out_of_stock)
+  lastRestocked DateTime    @default(now())
+  
+  // Optional: assigned to a manager
+  managerId     String?
+  manager       User?       @relation(fields: [managerId], references: [id], onDelete: SetNull)
+
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([stockStatus])
+  @@map("inventory")
+}
+
+// Enums
+enum UserRole {
+  admin
+  owner
+  manager
+  seller
+}
+
+enum UserStatus {
+  active
+  inactive
+}
+
+enum ProductStatus {
+  active
+  inactive
+  pending
+}
+
+enum StockStatus {
+  in_stock
+  low_stock
+  out_of_stock
+}
+
+enum ProductType {
+  oem
+  aftermarket
+}
+
+enum OrderStatus {
+  pending
+  approved
+  rejected
+  completed
+  cancelled
+}

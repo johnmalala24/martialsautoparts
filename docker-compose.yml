@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  # Next.js Application
+  # Note: PostgreSQL is running on the host machine (pgAdmin 4)
+  # The app connects to host.docker.internal to access the host's PostgreSQL
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: martials-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      # Connect to PostgreSQL on host machine (pgAdmin 4)
+      # host.docker.internal allows Docker container to access host services
+      - DATABASE_URL=postgresql://postgres:Mombasa%40254@host.docker.internal:5432/martials_auto_parts?connect_timeout=10&sslmode=prefer
+    volumes:
+      - ./prisma:/app/prisma
+      - ./public:/app/public
+    # Add extra_hosts for Windows/Mac compatibility
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command: sh -c "npx prisma generate && node server.js"
+
