@@ -1,7 +1,26 @@
-import { PrismaClient } from '@prisma/client';
 import { hash } from 'bcryptjs';
+import { PrismaClient } from '@prisma/client';
+import { config } from 'dotenv';
+import { resolve } from 'path';
 
-const prisma = new PrismaClient();
+// Load environment variables from .env file in project root
+config({ path: resolve(process.cwd(), '.env') });
+
+// Get DATABASE_URL
+const databaseUrl = process.env.DATABASE_URL;
+
+if (!databaseUrl) {
+  console.error('❌ DATABASE_URL is not set in .env file');
+  console.error('Current working directory:', process.cwd());
+  process.exit(1);
+}
+
+console.log('📡 Connecting to database:', databaseUrl.replace(/:[^:@]+@/, ':****@'));
+
+// Create Prisma client with log configuration (matching lib/prisma.ts)
+const prisma = new PrismaClient({
+  log: ['query', 'error', 'warn'],
+});
 
 async function main() {
   console.log('🌱 Starting database seed...');

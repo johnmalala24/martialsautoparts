@@ -109,7 +109,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                     Save 20%
                   </Badge>
                 </div>
-                <p className="text-sm text-gray-600 mt-2">Free shipping on orders over $100</p>
+                <p className="text-sm text-gray-600 mt-2">Free shipping on orders over KSh 10,000</p>
               </div>
               
               <p className="text-gray-700 mb-8 leading-relaxed text-lg">
@@ -151,7 +151,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                 <AliExpressCheckout 
                   product={product}
                   onSuccess={(orderId) => {
-                    console.log('Order placed successfully:', orderId);
+                    // Order placed successfully
                   }}
                   onError={(error) => {
                     console.error('Order failed:', error);
@@ -175,7 +175,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
               <div className="grid grid-cols-2 gap-4 mb-8">
                 <div className="p-4 bg-gray-50 rounded-xl">
                   <div className="text-sm text-gray-600 mb-1">Shipping</div>
-                  <div className="font-semibold">Free on orders $100+</div>
+                  <div className="font-semibold">Free on orders KSh 10,000+</div>
                 </div>
                 <div className="p-4 bg-gray-50 rounded-xl">
                   <div className="text-sm text-gray-600 mb-1">Returns</div>

@@ -13,7 +13,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const user = await authenticateUser(email, password);
+    let user;
+    try {
+      user = await authenticateUser(email, password);
+    } catch (error: any) {
+      if (error.message?.includes('Database not configured')) {
+        return NextResponse.json(
+          { error: 'Database not configured. Please set DATABASE_URL in .env file' },
+          { status: 503 }
+        );
+      }
+      throw error;
+    }
 
     if (!user) {
       return NextResponse.json(

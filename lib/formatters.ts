@@ -17,11 +17,11 @@ export const formatDateTime = (date: Date | string): string => {
   });
 };
 
-// Currency formatter
-export const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('en-US', {
+// Currency formatter - Default to Kenyan Shilling (KES)
+export const formatCurrency = (amount: number, currency: string = 'KES'): string => {
+  return new Intl.NumberFormat('en-KE', {
     style: 'currency',
-    currency: 'USD'
+    currency: currency
   }).format(amount);
 };
 

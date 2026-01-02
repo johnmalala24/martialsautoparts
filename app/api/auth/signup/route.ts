@@ -29,7 +29,19 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already exists
-    const existingUser = await getUserByEmail(email);
+    let existingUser;
+    try {
+      existingUser = await getUserByEmail(email);
+    } catch (error: any) {
+      if (error.message?.includes('Database not configured')) {
+        return NextResponse.json(
+          { error: 'Database not configured. Please set DATABASE_URL in .env file' },
+          { status: 503 }
+        );
+      }
+      throw error;
+    }
+    
     if (existingUser) {
       return NextResponse.json(
         { error: 'User with this email already exists' },
@@ -39,7 +51,18 @@ export async function POST(request: NextRequest) {
 
     // Create user - only customers can sign up publicly
     // Other roles must be created by admin
-    const user = await createUser(name, email, password, phone, 'seller');
+    let user;
+    try {
+      user = await createUser(name, email, password, phone, 'seller');
+    } catch (error: any) {
+      if (error.message?.includes('Database not configured')) {
+        return NextResponse.json(
+          { error: 'Database not configured. Please set DATABASE_URL in .env file' },
+          { status: 503 }
+        );
+      }
+      throw error;
+    }
 
     // Return user data without password
     return NextResponse.json({

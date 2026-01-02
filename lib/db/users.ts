@@ -1,4 +1,12 @@
 import { prisma } from '@/lib/prisma';
+
+// Helper to check if Prisma is available
+function requirePrisma() {
+  if (!prisma) {
+    throw new Error('Database not configured. Please set DATABASE_URL in .env file');
+  }
+  return prisma;
+}
 import { UserRole, UserStatus } from '@prisma/client';
 
 export interface CreateUserInput {
@@ -37,7 +45,7 @@ export async function getUsers(filters?: {
     ];
   }
 
-  return prisma.user.findMany({
+  return requirePrisma().user.findMany({
     where,
     orderBy: { createdAt: 'desc' },
   });
@@ -47,7 +55,7 @@ export async function getUsers(filters?: {
  * Get user by ID
  */
 export async function getUserById(id: string) {
-  return prisma.user.findUnique({
+  return requirePrisma().user.findUnique({
     where: { id },
     include: {
       sales: {
@@ -62,7 +70,7 @@ export async function getUserById(id: string) {
  * Get user by email
  */
 export async function getUserByEmail(email: string) {
-  return prisma.user.findUnique({
+  return requirePrisma().user.findUnique({
     where: { email },
   });
 }
@@ -76,7 +84,7 @@ export async function createUser(data: CreateUserInput) {
     throw new Error('Password is required');
   }
   
-  return prisma.user.create({
+  return requirePrisma().user.create({
     data: {
       ...data,
       password: data.password, // Explicitly set password
@@ -89,7 +97,7 @@ export async function createUser(data: CreateUserInput) {
  */
 export async function updateUser(data: UpdateUserInput) {
   const { id, ...updateData } = data;
-  return prisma.user.update({
+  return requirePrisma().user.update({
     where: { id },
     data: updateData,
   });
@@ -99,7 +107,7 @@ export async function updateUser(data: UpdateUserInput) {
  * Delete a user
  */
 export async function deleteUser(id: string) {
-  return prisma.user.delete({
+  return requirePrisma().user.delete({
     where: { id },
   });
 }

@@ -17,6 +17,10 @@ export async function createUser(
   phone?: string,
   role: UserRole = 'seller'
 ) {
+  if (!prisma) {
+    throw new Error('Database not configured. Please set DATABASE_URL in .env file');
+  }
+  
   const hashedPassword = await hashPassword(password);
   
   return prisma.user.create({
@@ -32,6 +36,10 @@ export async function createUser(
 }
 
 export async function authenticateUser(email: string, password: string) {
+  if (!prisma) {
+    throw new Error('Database not configured. Please set DATABASE_URL in .env file');
+  }
+  
   const user = await prisma.user.findUnique({
     where: { email },
   });
@@ -52,6 +60,10 @@ export async function authenticateUser(email: string, password: string) {
 }
 
 export async function getUserByEmail(email: string) {
+  if (!prisma) {
+    throw new Error('Database not configured. Please set DATABASE_URL in .env file');
+  }
+  
   return prisma.user.findUnique({
     where: { email },
     select: {

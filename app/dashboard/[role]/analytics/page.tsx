@@ -35,7 +35,7 @@ export default function AnalyticsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-500">Total Revenue</p>
-                <p className="text-2xl font-bold text-gray-900 mt-2">$125,000</p>
+                <p className="text-2xl font-bold text-gray-900 mt-2">KSh 12,500,000</p>
                 <div className="flex items-center gap-1 text-green-600 text-sm font-semibold mt-2">
                   <TrendingUp className="w-4 h-4" />
                   <span>+18.5%</span>
@@ -185,7 +185,7 @@ export default function AnalyticsPage() {
                   </div>
                 </div>
                 <div className="text-right ml-4">
-                  <p className="font-bold text-lg text-red-600">${product.revenue.toLocaleString()}</p>
+                  <p className="font-bold text-lg text-red-600">KSh {product.revenue.toLocaleString()}</p>
                   <div className="flex items-center gap-1 text-green-600 text-sm font-semibold">
                     <TrendingUp className="w-4 h-4" />
                     <span>+{Math.floor(Math.random() * 20 + 5)}%</span>

@@ -15,7 +15,7 @@ export default function SettingsPage() {
     city: 'New York',
     country: 'USA',
     timezone: 'America/New_York',
-    currency: 'USD',
+    currency: 'KES',
   });
 
   const [notifications, setNotifications] = useState({
@@ -114,6 +114,7 @@ export default function SettingsPage() {
                       onChange={(e) => setSettings({ ...settings, currency: e.target.value })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
                     >
+                      <option value="KES">KES (KSh)</option>
                       <option value="USD">USD ($)</option>
                       <option value="EUR">EUR (€)</option>
                       <option value="GBP">GBP (£)</option>

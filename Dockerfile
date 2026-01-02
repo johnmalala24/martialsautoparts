@@ -21,6 +21,8 @@ RUN npx prisma generate
 
 # Build the application
 ENV NEXT_TELEMETRY_DISABLED 1
+ENV DOCKER_BUILD=true
+ENV NODE_ENV=production
 RUN npm run build
 
 # Production image, copy all the files and run next

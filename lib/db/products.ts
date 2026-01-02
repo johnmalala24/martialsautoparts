@@ -1,4 +1,12 @@
 import { prisma } from '@/lib/prisma';
+
+// Helper to check if Prisma is available
+function requirePrisma() {
+  if (!prisma) {
+    throw new Error('Database not configured. Please set DATABASE_URL in .env file');
+  }
+  return prisma;
+}
 import { Product, StockStatus, ProductStatus, ProductType } from '@prisma/client';
 
 export interface CreateProductInput {
@@ -57,7 +65,7 @@ export async function getProducts(filters?: {
     ];
   }
 
-  return prisma.product.findMany({
+  return requirePrisma().product.findMany({
     where,
     orderBy: { createdAt: 'desc' },
     include: {
@@ -70,7 +78,7 @@ export async function getProducts(filters?: {
  * Get product by ID
  */
 export async function getProductById(id: string) {
-  return prisma.product.findUnique({
+  return requirePrisma().product.findUnique({
     where: { id },
     include: {
       inventory: true,
@@ -82,7 +90,7 @@ export async function getProductById(id: string) {
  * Create a new product
  */
 export async function createProduct(data: CreateProductInput) {
-  return prisma.product.create({
+  return requirePrisma().product.create({
     data: {
       ...data,
       images: data.images || [data.image],
@@ -97,7 +105,7 @@ export async function createProduct(data: CreateProductInput) {
  */
 export async function updateProduct(data: UpdateProductInput) {
   const { id, ...updateData } = data;
-  return prisma.product.update({
+  return requirePrisma().product.update({
     where: { id },
     data: updateData,
   });
@@ -107,7 +115,7 @@ export async function updateProduct(data: UpdateProductInput) {
  * Delete a product
  */
 export async function deleteProduct(id: string) {
-  return prisma.product.delete({
+  return requirePrisma().product.delete({
     where: { id },
   });
 }

@@ -76,7 +76,7 @@ export default function CreateSalePage() {
                       <p className="text-sm text-gray-600 mt-1">Stock: {selectedProduct.stockStatus === 'in_stock' ? 'Available' : 'Limited'}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-2xl font-bold text-red-600">${selectedProduct.price.toFixed(2)}</p>
+                      <p className="text-2xl font-bold text-red-600">KSh {selectedProduct.price.toFixed(2)}</p>
                     </div>
                   </div>
                 </div>
@@ -136,7 +136,7 @@ export default function CreateSalePage() {
                   </button>
                   {selectedProduct && (
                     <div className="ml-auto text-lg font-semibold text-gray-700">
-                      Total: <span className="text-red-600 text-2xl">${totalAmount.toFixed(2)}</span>
+                      Total: <span className="text-red-600 text-2xl">KSh {totalAmount.toFixed(2)}</span>
                     </div>
                   )}
                 </div>
@@ -186,22 +186,22 @@ export default function CreateSalePage() {
             <div className="space-y-4">
               <div className="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
                 <span className="text-gray-600 font-medium">Subtotal</span>
-                <span className="text-gray-900 font-bold">${totalAmount.toFixed(2)}</span>
+                <span className="text-gray-900 font-bold">KSh {totalAmount.toFixed(2)}</span>
               </div>
               <div className="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
                 <span className="text-gray-600 font-medium">Tax (10%)</span>
-                <span className="text-gray-900 font-bold">${(totalAmount * 0.1).toFixed(2)}</span>
+                <span className="text-gray-900 font-bold">KSh {(totalAmount * 0.1).toFixed(2)}</span>
               </div>
               <div className="border-t-2 border-gray-200 pt-4">
                 <div className="flex justify-between items-center">
                   <span className="text-lg font-bold text-gray-900">Total</span>
-                  <span className="text-2xl font-bold text-red-600">${(totalAmount * 1.1).toFixed(2)}</span>
+                  <span className="text-2xl font-bold text-red-600">KSh {(totalAmount * 1.1).toFixed(2)}</span>
                 </div>
               </div>
               {formData.quantity > 0 && selectedProduct && (
                 <div className="pt-4 border-t border-gray-200">
                   <p className="text-sm text-gray-500">Quantity: {formData.quantity}</p>
-                  <p className="text-sm text-gray-500 mt-1">Unit Price: ${selectedProduct.price.toFixed(2)}</p>
+                  <p className="text-sm text-gray-500 mt-1">Unit Price: KSh {selectedProduct.price.toFixed(2)}</p>
                 </div>
               )}
             </div>

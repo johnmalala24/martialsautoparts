@@ -1,4 +1,12 @@
 import { prisma } from '@/lib/prisma';
+
+// Helper to check if Prisma is available
+function requirePrisma() {
+  if (!prisma) {
+    throw new Error('Database not configured. Please set DATABASE_URL in .env file');
+  }
+  return prisma;
+}
 import { StockStatus } from '@prisma/client';
 
 export interface CreateInventoryItemInput {
@@ -32,7 +40,7 @@ export async function getInventoryItems(filters?: {
     where.stockStatus = 'low_stock';
   }
 
-  return prisma.inventoryItem.findMany({
+  return requirePrisma().inventoryItem.findMany({
     where,
     include: {
       product: true,
@@ -52,7 +60,7 @@ export async function getInventoryItems(filters?: {
  * Get inventory item by product ID
  */
 export async function getInventoryItemByProductId(productId: string) {
-  return prisma.inventoryItem.findUnique({
+  return requirePrisma().inventoryItem.findUnique({
     where: { productId },
     include: {
       product: true,
@@ -66,7 +74,7 @@ export async function getInventoryItemByProductId(productId: string) {
  */
 export async function upsertInventoryItem(data: CreateInventoryItemInput) {
   // Get product for denormalized field
-  const product = await prisma.product.findUnique({
+  const product = await requirePrisma().product.findUnique({
     where: { id: data.productId },
   });
 
@@ -74,7 +82,7 @@ export async function upsertInventoryItem(data: CreateInventoryItemInput) {
     throw new Error('Product not found');
   }
 
-  return prisma.inventoryItem.upsert({
+  return requirePrisma().inventoryItem.upsert({
     where: { productId: data.productId },
     update: {
       quantity: data.quantity,
@@ -95,7 +103,7 @@ export async function upsertInventoryItem(data: CreateInventoryItemInput) {
  * Update inventory quantity
  */
 export async function updateInventoryQuantity(productId: string, quantity: number) {
-  const inventoryItem = await prisma.inventoryItem.findUnique({
+  const inventoryItem = await requirePrisma().inventoryItem.findUnique({
     where: { productId },
   });
 
@@ -111,7 +119,7 @@ export async function updateInventoryQuantity(productId: string, quantity: numbe
     stockStatus = 'low_stock';
   }
 
-  return prisma.inventoryItem.update({
+  return requirePrisma().inventoryItem.update({
     where: { productId },
     data: {
       quantity,
@@ -125,7 +133,7 @@ export async function updateInventoryQuantity(productId: string, quantity: numbe
  * Restock inventory
  */
 export async function restockInventory(productId: string, additionalQuantity: number) {
-  const inventoryItem = await prisma.inventoryItem.findUnique({
+  const inventoryItem = await requirePrisma().inventoryItem.findUnique({
     where: { productId },
   });
 

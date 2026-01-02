@@ -1,4 +1,12 @@
 import { prisma } from '@/lib/prisma';
+
+// Helper to check if Prisma is available
+function requirePrisma() {
+  if (!prisma) {
+    throw new Error('Database not configured. Please set DATABASE_URL in .env file');
+  }
+  return prisma;
+}
 import { OrderStatus } from '@prisma/client';
 
 export interface CreateSaleInput {
@@ -50,7 +58,7 @@ export async function getSales(filters?: {
     }
   }
 
-  return prisma.sale.findMany({
+  return requirePrisma().sale.findMany({
     where,
     include: {
       product: true,
@@ -70,7 +78,7 @@ export async function getSales(filters?: {
  * Get sale by ID
  */
 export async function getSaleById(id: string) {
-  return prisma.sale.findUnique({
+  return requirePrisma().sale.findUnique({
     where: { id },
     include: {
       product: true,
@@ -85,15 +93,15 @@ export async function getSaleById(id: string) {
 export async function createSale(data: CreateSaleInput) {
   // Get product and seller for denormalized fields
   const [product, seller] = await Promise.all([
-    prisma.product.findUnique({ where: { id: data.productId } }),
-    prisma.user.findUnique({ where: { id: data.sellerId } }),
+    requirePrisma().product.findUnique({ where: { id: data.productId } }),
+    requirePrisma().user.findUnique({ where: { id: data.sellerId } }),
   ]);
 
   if (!product || !seller) {
     throw new Error('Product or seller not found');
   }
 
-  return prisma.sale.create({
+  return requirePrisma().sale.create({
     data: {
       ...data,
       productName: product.name,
@@ -108,7 +116,7 @@ export async function createSale(data: CreateSaleInput) {
  */
 export async function updateSale(data: UpdateSaleInput) {
   const { id, ...updateData } = data;
-  return prisma.sale.update({
+  return requirePrisma().sale.update({
     where: { id },
     data: updateData,
   });
@@ -127,10 +135,10 @@ export async function getDashboardStats(startDate?: Date, endDate?: Date) {
   const where = Object.keys(dateFilter).length > 0 ? { createdAt: dateFilter } : {};
 
   const [totalSales, totalUsers, totalProducts, revenueData] = await Promise.all([
-    prisma.sale.count({ where }),
-    prisma.user.count(),
-    prisma.product.count(),
-    prisma.sale.aggregate({
+    requirePrisma().sale.count({ where }),
+    requirePrisma().user.count(),
+    requirePrisma().product.count(),
+    requirePrisma().sale.aggregate({
       where: {
         ...where,
         status: 'completed',
